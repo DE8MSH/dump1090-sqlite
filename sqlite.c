@@ -23,7 +23,7 @@ if( rc ){
 }
 else
 {
-char msgFlights[1000], *p = msgFlights;
+//char msgFlights[1000], *p = msgFlights;
 
 ///////////////////////////////////////////////////
 /// INSERT into sqlite db
@@ -32,13 +32,13 @@ char msgFlights[1000], *p = msgFlights;
 /* we flill a live 'flights' table - update old data */
 /* DF 0 (Short Air to Air, ACAS has: altitude, icao) */
 if (mm->msgtype == 0) {
-	sql = sqlite3_mprintf( "INSERT OR IGNORE INTO flights (modes, alt, df, msgs) VALUES ('%06X', '%d', '%d', '%ld'); UPDATE flights SET modes='%06X',alt='%d',df='%d',msgs='%ld',last_update=CURRENT_TIMESTAMP WHERE modes='%06X';",mm->addr, mm->altitude, mm->msgtype, a->messages,mm->addr, mm->altitude, mm->msgtype, a->messages,mm->addr);
+	sql = sqlite3_mprintf( "INSERT OR IGNORE INTO flightslog (modes, alt, df, msgs) VALUES ('%06X', '%d', '%d', '%ld'); UPDATE flightslog SET modes='%06X',alt='%d',df='%d',msgs='%ld',last_update=CURRENT_TIMESTAMP WHERE modes='%06X';",mm->addr, mm->altitude, mm->msgtype, a->messages,mm->addr, mm->altitude, mm->msgtype, a->messages,mm->addr);
   rc = sqlite3_exec(db, sql, callback, 0, &zErrMsg);
   if( rc != SQLITE_OK ){
    fprintf(stderr, "SQL error: %s\n", zErrMsg);
       sqlite3_free(zErrMsg);
    }else{
-      fprintf(stdout, "msgtype 0 == OK\n");
+      fprintf(stdout, "DF 0 == OK\n");
    }
 }
 
@@ -59,18 +59,17 @@ sql = sqlite3_mprintf( "INSERT INTO flights (modes, alt, df, msgs) VALUES ('%06X
 */
 
     /* DF 5/21 (Surveillance (roll call) IDENT Reply, has: alt, icao, flight status, DR, UM, squawk) */
-/*  
-  if (mm->msgtype == 5 || mm->msgtype == 21) {
-sql = sqlite3_mprintf( "INSERT INTO flights (modes, alt, squawk, df, msgs) VALUES ('%06X', '%d', '%d', '%d', '%ld')",mm->addr, mm->altitude, mm->modeA, mm->msgtype, a->messages);
+if (mm->msgtype == 5 || mm->msgtype == 21) {
+sql = sqlite3_mprintf( "INSERT OR IGNORE INTO flights (modes, alt, squawk, df, msgs) VALUES ('%06X', '%d', '%d', '%d', '%ld'); UPDATE flightslog SET modes='%06X', alt='%d', squawk='%d', df='%d', msgs='%d', last_update=CURRENT_TIMESTAMP WHERE modes='%06X';",mm->addr, mm->altitude, mm->modeA, mm->msgtype, a->messages,mm->addr, mm->altitude, mm->modeA, mm->msgtype, a->messages);
   rc = sqlite3_exec(db, sql, callback, 0, &zErrMsg);
   if( rc != SQLITE_OK ){
    fprintf(stderr, "SQL error: %s\n", zErrMsg);
       sqlite3_free(zErrMsg);
    }else{
-      fprintf(stdout, "msgtype 5/21 == OK\n");
+      fprintf(stdout, "DF %d== OK\n",mm->msgtype);
    }
 }
-*/
+
  /* DF 11 */
 /*
 if (mm->msgtype == 11) {
@@ -88,14 +87,14 @@ sql = sqlite3_mprintf( "INSERT INTO flights (modes, df, msgs) VALUES ('%06X', '%
     /* DF17 *with or without position data */
 
   if (mm->msgtype == 17) {
-sql = sqlite3_mprintf( "INSERT OR IGNORE INTO flights (df, flight, airline, modes, alt, vr, lat, lon, speed, heading, msgs) VALUES ('%d', '%s', '%3s', '%06X', '%d', '%d', '%1.5f', '%1.5f', '%d', '%d', '%ld'); UPDATE flights SET df='%d',flight='%s',airline='%3s',modes='%06X',alt='%d',vr='%d',lat='%1.5f',lon='%1.5f',speed='%d',heading='%d',msgs='%ld',last_update=CURRENT_TIMESTAMP WHERE modes='%06X';",mm->msgtype, a->flight, a->flight, mm->addr, mm->altitude, mm->vert_rate, a->lat, a->lon, a->speed,a->track, a->messages
+sql = sqlite3_mprintf( "INSERT OR IGNORE INTO flightslog (df, flight, airline, modes, alt, vr, lat, lon, speed, heading, msgs) VALUES ('%d', '%s', '%3s', '%06X', '%d', '%d', '%1.5f', '%1.5f', '%d', '%d', '%ld'); UPDATE flightslog SET df='%d',flight='%s',airline='%3s',modes='%06X',alt='%d',vr='%d',lat='%1.5f',lon='%1.5f',speed='%d',heading='%d',msgs='%ld',last_update=CURRENT_TIMESTAMP WHERE modes='%06X';",mm->msgtype, a->flight, a->flight, mm->addr, mm->altitude, mm->vert_rate, a->lat, a->lon, a->speed,a->track, a->messages
 ,mm->msgtype, a->flight, a->flight, mm->addr, mm->altitude, mm->vert_rate, a->lat, a->lon, a->speed, a->track, a->messages);
   rc = sqlite3_exec(db, sql, callback, 0, &zErrMsg);
   if( rc != SQLITE_OK ){
    fprintf(stderr, "SQL error: %s\n", zErrMsg);
       sqlite3_free(zErrMsg);
    }else{
-      fprintf(stdout, "msgtype 17 == OK\n");
+      fprintf(stdout, "DF 17 == OK\n");
    }
 }
 
