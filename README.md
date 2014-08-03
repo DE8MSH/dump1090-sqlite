@@ -17,7 +17,7 @@ Installation
 * git clone https://github.com/DE8MSH/dump1090-sqlite.git
 * cd dump1090-sqlite
 * wget basestation.sqb from anywhere
-* cat create_tables.sql | sqlite3 basestation.sqb 
+* cat ./tools/create_tables.sql | sqlite3 basestation.sqb 
 * make
 * ./dump1090 --sql
 
