@@ -1,4 +1,4 @@
-CREATE TABLE flights ( 
+CREATE TABLE flightslog ( 
     df          SMALLINT( 2 ),
     modes       CHAR( 6 )          UNIQUE ON CONFLICT REPLACE,
     country     CHAR( 2 ),
@@ -17,7 +17,7 @@ CREATE TABLE flights (
     last_update TIMESTAMP          DEFAULT ( CURRENT_TIMESTAMP ) 
 );
 
-CREATE TABLE tracks ( 
+CREATE TABLE trackslog ( 
     id          INTEGER            PRIMARY KEY AUTOINCREMENT,
     modes       CHAR( 6 ),
     alt         INT( 6 ),
