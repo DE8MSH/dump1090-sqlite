@@ -32,6 +32,8 @@ CREATE VIEW planes AS
               a.registration,
               a.type,
               f.last_update
-         FROM flights f
+         FROM flightslogs f
               JOIN Aircraft a
                 ON ( f.modes = a.modes );
+
+
